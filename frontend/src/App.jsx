@@ -94,7 +94,6 @@ const App = () => {
   }
 
   const personsToShow = showAll ? persons : persons.filter(person => person.name.toLowerCase().includes(filterVal.toLowerCase()))
-  console.log(personsToShow)
 
 
   return (

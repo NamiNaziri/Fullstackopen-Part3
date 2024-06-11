@@ -1,8 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
+
 const app = express()
+const Person = require('./models/person')
 
 app.use(express.static('dist'))
 app.use(cors())
@@ -35,9 +38,12 @@ let persons = [
     }
 ]
 
+
   
   app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+      response.json(result)
+    } )
   })
 
   app.get('/api/info', (request, response) => {
@@ -48,13 +54,21 @@ let persons = [
   })
 
   app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
+    Person.findById(request.params.id).then(person => {
+      if(person)
+      {
         response.json(person)
-      } else {
+      }
+      else
+      {
         response.status(404).end()
       }
+      
+    }).catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
+
   })
 
   app.delete('/api/persons/:id', (request, response) => {
@@ -69,6 +83,7 @@ let persons = [
   }
   app.post('/api/persons', (request, response) => {
     const body = request.body
+    console.log('hi')
 
     if (!body.name) {
       return response.status(400).json({ 
@@ -81,25 +96,27 @@ let persons = [
           error: 'number missing' 
         })
       }
-    const existingPerson = persons.find((person)=> person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase())
+      
+    const existingPerson = persons.find((person)=> person.name.toLowerCase() === body.name.toLowerCase())
     if(existingPerson){
         return response.status(400).json({ 
           error: 'name must be unique'
         })
       }
-  
-    const person = {
-      name: body.name,
-      number: body.number,
-      id: getRandomInt(999999999999),
-    }
-  
-    persons = persons.concat(person)
-  
-    response.json(person)
+
+    const person = new Person({
+        name:  body.name,
+        number: body.number,
+    })
+    console.log(person)
+    person.save().then(result => {
+      response.json(result)
+  })
+
+    
   })
   
-  const PORT = process.env.PORT || 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
