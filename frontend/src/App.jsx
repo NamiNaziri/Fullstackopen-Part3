@@ -40,7 +40,7 @@ const App = () => {
         })
         .catch(error => {
           setNotificationMessage(
-           {message: `Information of '${existingPerson.name}' has already been removed from server`, isError:true}
+           {message: error.response.data.error, isError:true}
           )
           setNewName('')
           setNewNumber('')
@@ -66,6 +66,17 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage({message:null, isError: false})
       }, 5000)
+    }).catch(error => {
+      setNotificationMessage(
+        {message: error.response.data.error, isError:true}
+       )
+       setNewName('')
+       setNewNumber('')
+       setTimeout(() => {
+         setNotificationMessage({message:null, isError: false})
+       }, 5000)
+
+      console.log(error.response.data.error)
     })
   }
   const deletePerson = (id) => {

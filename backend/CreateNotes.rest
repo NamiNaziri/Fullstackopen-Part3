@@ -8,9 +8,18 @@ POST http://localhost:3001/api/persons/ HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sdasdasd",
+    "name": "ssssa",
     "number": "060-123456"
 }
 
 ###
 DELETE http://localhost:3001/api/persons/6668d6549293ce72c433db45
+
+###
+PUT http://localhost:3001/api/persons/6668d6549293ce72c433db45 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "ssssa",
+    "number": "56"
+}

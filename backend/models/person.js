@@ -18,8 +18,23 @@ mongoose.connect(url)
   })
 
 const phonebookSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {    type: String,
+    minLength: 3,
+    required: true},
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: function(v) {
+        if (v.length < 8) {
+          return false;
+        }
+        return /^\d{2,3}-\d+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid phone number! It should be formed of two parts that are separated by -, the first part has two or three numbers and the second part also consists of numbers`
+    },
+    required: [true, 'User phone number required']
+  },
   })
 
 phonebookSchema.set('toJSON', {
